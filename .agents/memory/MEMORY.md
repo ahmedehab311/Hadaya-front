@@ -1,0 +1,3 @@
+- [Lib build order](lib-build-order.md) — composite libs must be built before leaf packages can typecheck against them
+- [Settings upsert pattern](settings-upsert.md) — single-row settings table requires ensureSettings() + explicit WHERE via sql`` template
+- [Google Fonts CSS import](google-fonts-import.md) — PostCSS rejects late @import; load fonts via <link> in index.html instead

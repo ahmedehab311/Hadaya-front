@@ -1,22 +1,38 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Hadaya Gift Platform API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: products
+    description: Product catalog
+  - name: collections
+    description: Product collections
+  - name: orders
+    description: Customer orders
+  - name: gift
+    description: Gift recipient flow
+  - name: admin-orders
+    description: Admin order management
+  - name: admin-products
+    description: Admin product management
+  - name: admin-collections
+    description: Admin collection management
+  - name: admin-settings
+    description: Admin settings
+  - name: admin-dashboard
+    description: Admin dashboard statistics
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +40,748 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # ─── Customer: Products ───────────────────────────────────────────────────
+  /products:
+    get:
+      operationId: listProducts
+      tags: [products]
+      summary: List all products
+      parameters:
+        - in: query
+          name: collectionId
+          schema: { type: ["integer", "null"] }
+        - in: query
+          name: search
+          schema: { type: ["string", "null"] }
+        - in: query
+          name: featured
+          schema: { type: ["boolean", "null"] }
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+
+  /products/featured:
+    get:
+      operationId: getFeaturedProducts
+      tags: [products]
+      summary: Get featured products for home page
+      responses:
+        "200":
+          description: Featured products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+
+  /products/{id}:
+    get:
+      operationId: getProduct
+      tags: [products]
+      summary: Get a single product
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Product detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Not found
+
+  # ─── Customer: Collections ────────────────────────────────────────────────
+  /collections:
+    get:
+      operationId: listCollections
+      tags: [collections]
+      summary: List all collections
+      responses:
+        "200":
+          description: List of collections
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Collection"
+
+  /collections/{id}:
+    get:
+      operationId: getCollection
+      tags: [collections]
+      summary: Get collection with its products
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Collection with products
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionWithProducts"
+        "404":
+          description: Not found
+
+  # ─── Customer: Orders ─────────────────────────────────────────────────────
+  /orders:
+    post:
+      operationId: createOrder
+      tags: [orders]
+      summary: Place a new order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderInput"
+      responses:
+        "201":
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/{id}:
+    get:
+      operationId: getOrder
+      tags: [orders]
+      summary: Get order status
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Order detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "404":
+          description: Not found
+
+  # ─── Gift Flow ────────────────────────────────────────────────────────────
+  /gift/{token}:
+    get:
+      operationId: getGiftByToken
+      tags: [gift]
+      summary: Get gift order info by secure token
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Gift info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GiftInfo"
+        "404":
+          description: Token not found or expired
+
+  /gift/{token}/address:
+    post:
+      operationId: submitGiftAddress
+      tags: [gift]
+      summary: Recipient submits their delivery address
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GiftAddressInput"
+      responses:
+        "200":
+          description: Address saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GiftInfo"
+        "404":
+          description: Token not found or expired
+
+  # ─── Admin: Dashboard Stats ───────────────────────────────────────────────
+  /admin/dashboard/stats:
+    get:
+      operationId: getAdminDashboardStats
+      tags: [admin-dashboard]
+      summary: Get dashboard summary stats
+      responses:
+        "200":
+          description: Dashboard statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /admin/dashboard/order-status-breakdown:
+    get:
+      operationId: getOrderStatusBreakdown
+      tags: [admin-dashboard]
+      summary: Order counts grouped by status
+      responses:
+        "200":
+          description: Order status breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrderStatusCount"
+
+  /admin/dashboard/recent-activity:
+    get:
+      operationId: getRecentActivity
+      tags: [admin-dashboard]
+      summary: Recent order activity feed
+      responses:
+        "200":
+          description: Recent activity
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityItem"
+
+  # ─── Admin: Orders ────────────────────────────────────────────────────────
+  /admin/orders:
+    get:
+      operationId: listAdminOrders
+      tags: [admin-orders]
+      summary: List all orders with filters
+      parameters:
+        - in: query
+          name: status
+          schema: { type: ["string", "null"] }
+        - in: query
+          name: paymentMethod
+          schema: { type: ["string", "null"] }
+        - in: query
+          name: dateFrom
+          schema: { type: ["string", "null"] }
+        - in: query
+          name: dateTo
+          schema: { type: ["string", "null"] }
+        - in: query
+          name: search
+          schema: { type: ["string", "null"] }
+      responses:
+        "200":
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+
+  /admin/orders/{id}:
+    get:
+      operationId: getAdminOrder
+      tags: [admin-orders]
+      summary: Get full order detail
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Order detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateAdminOrder
+      tags: [admin-orders]
+      summary: Update order status / notes
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderUpdate"
+      responses:
+        "200":
+          description: Updated order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  # ─── Admin: Products ──────────────────────────────────────────────────────
+  /admin/products:
+    get:
+      operationId: listAdminProducts
+      tags: [admin-products]
+      summary: List all products (admin)
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+    post:
+      operationId: createProduct
+      tags: [admin-products]
+      summary: Create a new product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "201":
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+  /admin/products/{id}:
+    get:
+      operationId: getAdminProduct
+      tags: [admin-products]
+      summary: Get product by id (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateProduct
+      tags: [admin-products]
+      summary: Update a product
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductUpdate"
+      responses:
+        "200":
+          description: Updated product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+    delete:
+      operationId: deleteProduct
+      tags: [admin-products]
+      summary: Delete a product
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: Deleted
+
+  # ─── Admin: Collections ───────────────────────────────────────────────────
+  /admin/collections:
+    get:
+      operationId: listAdminCollections
+      tags: [admin-collections]
+      summary: List all collections (admin)
+      responses:
+        "200":
+          description: List of collections
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Collection"
+    post:
+      operationId: createCollection
+      tags: [admin-collections]
+      summary: Create a new collection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CollectionInput"
+      responses:
+        "201":
+          description: Collection created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Collection"
+
+  /admin/collections/{id}:
+    patch:
+      operationId: updateCollection
+      tags: [admin-collections]
+      summary: Update a collection
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CollectionUpdate"
+      responses:
+        "200":
+          description: Updated collection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Collection"
+    delete:
+      operationId: deleteCollection
+      tags: [admin-collections]
+      summary: Delete a collection
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: Deleted
+
+  # ─── Admin: Settings ──────────────────────────────────────────────────────
+  /admin/settings:
+    get:
+      operationId: getSettings
+      tags: [admin-settings]
+      summary: Get system settings
+      responses:
+        "200":
+          description: Settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Settings"
+    patch:
+      operationId: updateSettings
+      tags: [admin-settings]
+      summary: Update system settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SettingsUpdate"
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Settings"
+
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
+      properties:
+        status: { type: string }
+
+    # ─── Core Entities ─────────────────────────────────────────────────────
+    Product:
+      type: object
+      required: [id, nameAr, nameEn, price, imageUrl, inStock, isFeatured, createdAt]
+      properties:
+        id: { type: integer }
+        nameAr: { type: string }
+        nameEn: { type: string }
+        descriptionAr: { type: ["string", "null"] }
+        descriptionEn: { type: ["string", "null"] }
+        price: { type: number }
+        imageUrl: { type: string }
+        inStock: { type: boolean }
+        isFeatured: { type: boolean }
+        collectionId: { type: ["integer", "null"] }
+        collectionName: { type: ["string", "null"] }
+        createdAt: { type: string }
+
+    ProductInput:
+      type: object
+      required: [nameAr, nameEn, price, imageUrl]
+      properties:
+        nameAr: { type: string, minLength: 1 }
+        nameEn: { type: string, minLength: 1 }
+        descriptionAr: { type: string }
+        descriptionEn: { type: string }
+        price: { type: number, minimum: 0 }
+        imageUrl: { type: string }
+        inStock: { type: boolean }
+        isFeatured: { type: boolean }
+        collectionId: { type: ["integer", "null"] }
+
+    ProductUpdate:
+      type: object
+      properties:
+        nameAr: { type: string }
+        nameEn: { type: string }
+        descriptionAr: { type: string }
+        descriptionEn: { type: string }
+        price: { type: number }
+        imageUrl: { type: string }
+        inStock: { type: boolean }
+        isFeatured: { type: boolean }
+        collectionId: { type: ["integer", "null"] }
+
+    Collection:
+      type: object
+      required: [id, nameAr, nameEn, createdAt]
+      properties:
+        id: { type: integer }
+        nameAr: { type: string }
+        nameEn: { type: string }
+        descriptionAr: { type: ["string", "null"] }
+        descriptionEn: { type: ["string", "null"] }
+        imageUrl: { type: ["string", "null"] }
+        productCount: { type: integer }
+        createdAt: { type: string }
+
+    CollectionWithProducts:
+      type: object
+      required: [id, nameAr, nameEn, products, createdAt]
+      properties:
+        id: { type: integer }
+        nameAr: { type: string }
+        nameEn: { type: string }
+        descriptionAr: { type: ["string", "null"] }
+        descriptionEn: { type: ["string", "null"] }
+        imageUrl: { type: ["string", "null"] }
+        createdAt: { type: string }
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"
+
+    CollectionInput:
+      type: object
+      required: [nameAr, nameEn]
+      properties:
+        nameAr: { type: string, minLength: 1 }
+        nameEn: { type: string, minLength: 1 }
+        descriptionAr: { type: string }
+        descriptionEn: { type: string }
+        imageUrl: { type: string }
+
+    CollectionUpdate:
+      type: object
+      properties:
+        nameAr: { type: string }
+        nameEn: { type: string }
+        descriptionAr: { type: string }
+        descriptionEn: { type: string }
+        imageUrl: { type: string }
+
+    OrderItem:
+      type: object
+      required: [id, productId, productNameAr, productNameEn, productImageUrl, quantity, unitPrice, subtotal]
+      properties:
+        id: { type: integer }
+        productId: { type: integer }
+        productNameAr: { type: string }
+        productNameEn: { type: string }
+        productImageUrl: { type: string }
+        quantity: { type: integer }
+        unitPrice: { type: number }
+        subtotal: { type: number }
+
+    Order:
+      type: object
+      required: [id, status, paymentMethod, subtotal, deliveryFee, total, createdAt, items]
+      properties:
+        id: { type: integer }
+        customerName: { type: ["string", "null"] }
+        customerPhone: { type: ["string", "null"] }
+        customerEmail: { type: ["string", "null"] }
+        status:
+          type: string
+          enum: [pending, confirmed, processing, shipped, delivered, cancelled]
+        paymentMethod:
+          type: string
+          enum: [cash_on_delivery, bank_transfer, card]
+        subtotal: { type: number }
+        deliveryFee: { type: number }
+        total: { type: number }
+        notes: { type: ["string", "null"] }
+        recipientAddress: { type: ["string", "null"] }
+        recipientCity: { type: ["string", "null"] }
+        giftToken: { type: ["string", "null"] }
+        isGift: { type: boolean }
+        createdAt: { type: string }
+        updatedAt: { type: string }
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+
+    OrderInput:
+      type: object
+      required: [items, paymentMethod]
+      properties:
+        customerName: { type: string }
+        customerPhone: { type: string }
+        customerEmail: { type: string }
+        paymentMethod:
+          type: string
+          enum: [cash_on_delivery, bank_transfer, card]
+        notes: { type: string }
+        isGift: { type: boolean }
+        recipientAddress: { type: string }
+        recipientCity: { type: string }
+        items:
+          type: array
+          items:
+            type: object
+            required: [productId, quantity]
+            properties:
+              productId: { type: integer }
+              quantity: { type: integer }
+
+    OrderUpdate:
+      type: object
       properties:
         status:
           type: string
-      required:
-        - status
+          enum: [pending, confirmed, processing, shipped, delivered, cancelled]
+        notes: { type: string }
+        recipientAddress: { type: string }
+        recipientCity: { type: string }
 
+    GiftInfo:
+      type: object
+      required: [orderId, isAddressSubmitted, items]
+      properties:
+        orderId: { type: integer }
+        senderName: { type: ["string", "null"] }
+        message: { type: ["string", "null"] }
+        isAddressSubmitted: { type: boolean }
+        recipientAddress: { type: ["string", "null"] }
+        recipientCity: { type: ["string", "null"] }
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+
+    GiftAddressInput:
+      type: object
+      required: [recipientAddress, recipientCity]
+      properties:
+        recipientAddress: { type: string, minLength: 1 }
+        recipientCity: { type: string, minLength: 1 }
+
+    DashboardStats:
+      type: object
+      required: [totalOrders, totalRevenue, pendingOrders, processingOrders, deliveredOrders, totalProducts, totalCollections]
+      properties:
+        totalOrders: { type: integer }
+        totalRevenue: { type: number }
+        pendingOrders: { type: integer }
+        processingOrders: { type: integer }
+        deliveredOrders: { type: integer }
+        cancelledOrders: { type: integer }
+        totalProducts: { type: integer }
+        totalCollections: { type: integer }
+        revenueToday: { type: number }
+        ordersToday: { type: integer }
+
+    OrderStatusCount:
+      type: object
+      required: [status, count]
+      properties:
+        status: { type: string }
+        count: { type: integer }
+
+    ActivityItem:
+      type: object
+      required: [id, type, message, createdAt]
+      properties:
+        id: { type: integer }
+        type:
+          type: string
+          enum: [order_placed, order_confirmed, order_shipped, order_delivered, order_cancelled]
+        message: { type: string }
+        orderId: { type: ["integer", "null"] }
+        createdAt: { type: string }
+
+    Settings:
+      type: object
+      required: [id, deliveryFeeDefault, deliveryFeeExpress, storeName, storePhone, storeEmail]
+      properties:
+        id: { type: integer }
+        storeName: { type: string }
+        storePhone: { type: string }
+        storeEmail: { type: string }
+        deliveryFeeDefault: { type: number }
+        deliveryFeeExpress: { type: number }
+        deliveryNote: { type: ["string", "null"] }
+        bankAccountInfo: { type: ["string", "null"] }
+
+    SettingsUpdate:
+      type: object
+      properties:
+        storeName: { type: string }
+        storePhone: { type: string }
+        storeEmail: { type: string }
+        deliveryFeeDefault: { type: number }
+        deliveryFeeExpress: { type: number }
+        deliveryNote: { type: string }
+        bankAccountInfo: { type: string }
