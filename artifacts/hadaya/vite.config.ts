@@ -1,43 +1,42 @@
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
-import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
-// عملنا لهم Import طبيعي هنا عشان نخلص من خناقة الـ await جوة الـ function
-import { cartographer } from "@replit/vite-plugin-cartographer";
-import { devBanner } from "@replit/vite-plugin-dev-banner";
-
-export default defineConfig(({ mode }) => {
-  // 1. قراءة ملف الـ .env المحلي
+export default defineConfig(async ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
-  // 2. تحديد البورت
-  const rawPort = env.PORT || process.env.PORT || "3000";
+  const rawPort = env.PORT || process.env.PORT || "5173";
   const port = Number(rawPort);
-
   if (Number.isNaN(port) || port <= 0) {
     throw new Error(`Invalid PORT value: "${rawPort}"`);
   }
 
-  // 3. تحديد الـ BASE_PATH
   const basePath = env.BASE_PATH || process.env.BASE_PATH || "/";
+  const isReplit = !!process.env.REPL_ID;
+
+  const replitPlugins: Plugin[] = [];
+  if (isReplit) {
+    try {
+      const mod = await import("@replit/vite-plugin-runtime-error-modal");
+      const fn = (mod.default ?? mod) as () => Plugin;
+      replitPlugins.push(fn());
+    } catch {}
+    try {
+      const { cartographer } = await import("@replit/vite-plugin-cartographer");
+      const { devBanner } = await import("@replit/vite-plugin-dev-banner");
+      if (process.env.NODE_ENV !== "production") {
+        replitPlugins.push(
+          cartographer({ root: path.resolve(import.meta.dirname, "..") }),
+          devBanner(),
+        );
+      }
+    } catch {}
+  }
 
   return {
     base: basePath,
-    plugins: [
-      react(),
-      tailwindcss(),
-      runtimeErrorOverlay(),
-      ...(process.env.NODE_ENV !== "production" && process.env.REPL_ID !== undefined
-        ? [
-          cartographer({ 
-            root: path.resolve(import.meta.dirname, ".."),
-          }),
-          devBanner(), 
-        ]
-        : []),
-    ],
+    plugins: [react(), tailwindcss(), ...replitPlugins],
     resolve: {
       alias: {
         "@": path.resolve(import.meta.dirname, "src"),
@@ -55,9 +54,15 @@ export default defineConfig(({ mode }) => {
       strictPort: true,
       host: "0.0.0.0",
       allowedHosts: true,
-      fs: {
-        strict: true,
-      },
+      fs: { strict: true },
+      proxy: isReplit
+        ? undefined
+        : {
+            "/api": {
+              target: "http://localhost:8080",
+              changeOrigin: true,
+            },
+          },
     },
     preview: {
       port,

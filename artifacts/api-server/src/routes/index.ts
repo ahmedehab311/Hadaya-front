@@ -1,4 +1,8 @@
 import { Router, type IRouter } from "express";
+import { hasDatabaseUrl } from "@workspace/db";
+
+import mockRouter from "../mock-router";
+
 import healthRouter from "./health";
 import productsRouter from "./products";
 import collectionsRouter from "./collections";
@@ -12,15 +16,19 @@ import adminSettingsRouter from "./admin/settings";
 
 const router: IRouter = Router();
 
-router.use(healthRouter);
-router.use(productsRouter);
-router.use(collectionsRouter);
-router.use(ordersRouter);
-router.use(giftRouter);
-router.use(adminDashboardRouter);
-router.use(adminOrdersRouter);
-router.use(adminProductsRouter);
-router.use(adminCollectionsRouter);
-router.use(adminSettingsRouter);
+if (!hasDatabaseUrl) {
+  router.use(mockRouter);
+} else {
+  router.use(healthRouter);
+  router.use(productsRouter);
+  router.use(collectionsRouter);
+  router.use(ordersRouter);
+  router.use(giftRouter);
+  router.use(adminDashboardRouter);
+  router.use(adminOrdersRouter);
+  router.use(adminProductsRouter);
+  router.use(adminCollectionsRouter);
+  router.use(adminSettingsRouter);
+}
 
 export default router;
