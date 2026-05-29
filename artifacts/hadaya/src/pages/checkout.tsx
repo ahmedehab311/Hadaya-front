@@ -39,7 +39,7 @@ export default function CheckoutPage() {
     paymentMethod: "cash_on_delivery" as "cash_on_delivery" | "bank_transfer" | "card",
   });
 
-  const deliveryFee = settings ? settings.deliveryFeeDefault : 25;
+  const deliveryFee = settings ? settings.deliveryFee : 25;
   const total = subtotal + deliveryFee;
 
   const handleSubmit = () => {

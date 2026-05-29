@@ -1,0 +1,91 @@
+Task: Expand the existing Admin Settings Page for the "Hadaya" project to include all required application configurations. Implement a fully functional tabs-based layout containing all fields listed below. Do not restrict the design to a specific layout, feel free to use your best UI/UX judgment (using Tailwind CSS + shadcn/ui), but ensure every single input field and toggle is present.
+
+Please include the following tabs and fields:
+
+General Tab:
+
+Site name (AR) [Input Text]
+
+Site name (EN) [Input Text]
+
+Timezone [Select Dropdown, e.g., Africa/Cairo]
+
+Default language [Select Dropdown, e.g., Arabic (ar)]
+
+Site logo [Input Text / File Picker mock for URL]
+
+Favicon [Input Text / File Picker mock for URL]
+
+Financial Tab:
+
+Currency code (3 letters) [Input Text, e.g., EGP]
+
+Displayed symbol [Input Text, e.g., ج.م]
+
+Delivery time (AR) [Input Text, e.g., 2-5 أيام عمل]
+
+Delivery time (EN) [Input Text, e.g., 2-5 business days]
+
+Delivery fee [Input Number]
+
+Free delivery threshold [Input Number]
+
+Gifts Tab:
+
+Gift link expiry (days) [Input Number]
+
+Max gift message length [Input Number]
+
+Default message (AR) [Textarea]
+
+Default message (EN) [Textarea]
+
+Enable gift wrapping [Toggle Switch]
+
+Wrapping fee [Input Number]
+
+Greeting card fee [Input Number]
+
+Max recipients per gift [Input Number]
+
+Policies & Contact Tab:
+
+Terms (AR — HTML) [Textarea/Code Editor View]
+
+Terms (EN — HTML) [Textarea/Code Editor View]
+
+Privacy (AR — HTML) [Textarea/Code Editor View]
+
+Privacy (EN — HTML) [Textarea/Code Editor View]
+
+Returns (AR — HTML) [Textarea/Code Editor View]
+
+Returns (EN — HTML) [Textarea/Code Editor View]
+
+Support email [Input Email]
+
+Phone [Input Text]
+
+WhatsApp [Input Text]
+
+System Tab:
+
+Maintenance mode [Toggle Switch with warning indicator]
+
+Accept new orders [Toggle Switch]
+
+SEO & Social Links Tab:
+
+Dynamic list of social platforms with "Add platform" button and a delete icon for each row (Fields: Platform Name, Profile URL).
+
+Payments Sub-Section (or dedicated View):
+
+Cash on Delivery (COD): Toggle Switch + helper text.
+
+Credit Card: Toggle Switch + placeholder for activation.
+
+Vodafone Cash: Toggle Switch + Wallet Number [Input] + Instructions for customer [Textarea].
+
+Instapay: Toggle Switch + Account Name [Input] + Account ID/Address [Input] + Instructions for customer [Textarea].
+
+Global Action: Ensure a prominent "Save Settings" button is anchored or visible across tabs. Make sure the component handles state transitions smoothly and looks modern in both Light and Dark modes. Use Lucide React for consistent iconography.

@@ -7,13 +7,14 @@ async function seed() {
   const existingSettings = await db.select().from(settingsTable).limit(1);
   if (existingSettings.length === 0) {
     await db.insert(settingsTable).values({
-      storeName: "هدايا",
-      storePhone: "+966 50 000 0000",
-      storeEmail: "hello@hadaya.sa",
-      deliveryFeeDefault: "25",
-      deliveryFeeExpress: "50",
-      deliveryNote: "التوصيل خلال 2-3 أيام عمل",
-      bankAccountInfo: "بنك الراجحي — IBAN: SA00 0000 0000 0000 0000",
+      storeNameAr: "هدايا",
+      storeNameEn: "Hadaya",
+      supportEmail: "hello@hadaya.sa",
+      phone: "+966 50 000 0000",
+      deliveryFee: "25",
+      freeDeliveryThreshold: "200",
+      deliveryTimeAr: "2-3 أيام عمل",
+      deliveryTimeEn: "2-3 business days",
     });
     console.log("✓ Settings created");
   }

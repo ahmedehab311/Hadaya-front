@@ -5,13 +5,48 @@
  * Hadaya Gift Platform API
  * OpenAPI spec version: 0.1.0
  */
+import type { SocialLink } from './socialLink';
 
 export interface SettingsUpdate {
-  storeName?: string;
-  storePhone?: string;
-  storeEmail?: string;
-  deliveryFeeDefault?: number;
-  deliveryFeeExpress?: number;
-  deliveryNote?: string;
-  bankAccountInfo?: string;
+  storeNameAr?: string;
+  storeNameEn?: string;
+  timezone?: string;
+  defaultLanguage?: string;
+  logoUrl?: string;
+  faviconUrl?: string;
+  currencyCode?: string;
+  currencySymbol?: string;
+  deliveryTimeAr?: string;
+  deliveryTimeEn?: string;
+  deliveryFee?: number;
+  freeDeliveryThreshold?: number;
+  giftLinkExpiryDays?: number;
+  maxGiftMessageLength?: number;
+  defaultGiftMessageAr?: string;
+  defaultGiftMessageEn?: string;
+  enableGiftWrapping?: boolean;
+  wrappingFee?: number;
+  greetingCardFee?: number;
+  maxRecipientsPerGift?: number;
+  termsAr?: string;
+  termsEn?: string;
+  privacyAr?: string;
+  privacyEn?: string;
+  returnsAr?: string;
+  returnsEn?: string;
+  supportEmail?: string;
+  phone?: string;
+  whatsapp?: string;
+  maintenanceMode?: boolean;
+  acceptNewOrders?: boolean;
+  socialLinks?: SocialLink[];
+  paymentCod?: boolean;
+  paymentCreditCard?: boolean;
+  paymentVodafone?: boolean;
+  paymentVodafoneWallet?: string;
+  paymentVodafoneInstructions?: string;
+  paymentInstapay?: boolean;
+  paymentInstapayName?: string;
+  paymentInstapayId?: string;
+  paymentInstapayInstructions?: string;
 }

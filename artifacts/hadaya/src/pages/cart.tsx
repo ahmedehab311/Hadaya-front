@@ -13,7 +13,7 @@ export default function CartPage() {
   const { data: settings } = useGetSettings();
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
 
-  const deliveryFee = settings ? settings.deliveryFeeDefault : 25;
+  const deliveryFee = settings ? settings.deliveryFee : 25;
   const total = subtotal + deliveryFee;
 
   return (

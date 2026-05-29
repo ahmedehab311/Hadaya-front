@@ -762,26 +762,133 @@ components:
         orderId: { type: ["integer", "null"] }
         createdAt: { type: string }
 
+    SocialLink:
+      type: object
+      required: [platform, url]
+      properties:
+        platform: { type: string }
+        url: { type: string }
+
     Settings:
       type: object
-      required: [id, deliveryFeeDefault, deliveryFeeExpress, storeName, storePhone, storeEmail]
+      required:
+        - id
+        - storeNameAr
+        - storeNameEn
+        - timezone
+        - defaultLanguage
+        - currencyCode
+        - currencySymbol
+        - deliveryTimeAr
+        - deliveryTimeEn
+        - deliveryFee
+        - freeDeliveryThreshold
+        - giftLinkExpiryDays
+        - maxGiftMessageLength
+        - enableGiftWrapping
+        - wrappingFee
+        - greetingCardFee
+        - maxRecipientsPerGift
+        - supportEmail
+        - phone
+        - maintenanceMode
+        - acceptNewOrders
+        - socialLinks
+        - paymentCod
+        - paymentCreditCard
+        - paymentVodafone
+        - paymentInstapay
       properties:
         id: { type: integer }
-        storeName: { type: string }
-        storePhone: { type: string }
-        storeEmail: { type: string }
-        deliveryFeeDefault: { type: number }
-        deliveryFeeExpress: { type: number }
-        deliveryNote: { type: ["string", "null"] }
-        bankAccountInfo: { type: ["string", "null"] }
+        storeNameAr: { type: string }
+        storeNameEn: { type: string }
+        timezone: { type: string }
+        defaultLanguage: { type: string }
+        logoUrl: { type: ["string", "null"] }
+        faviconUrl: { type: ["string", "null"] }
+        currencyCode: { type: string }
+        currencySymbol: { type: string }
+        deliveryTimeAr: { type: string }
+        deliveryTimeEn: { type: string }
+        deliveryFee: { type: number }
+        freeDeliveryThreshold: { type: number }
+        giftLinkExpiryDays: { type: integer }
+        maxGiftMessageLength: { type: integer }
+        defaultGiftMessageAr: { type: ["string", "null"] }
+        defaultGiftMessageEn: { type: ["string", "null"] }
+        enableGiftWrapping: { type: boolean }
+        wrappingFee: { type: number }
+        greetingCardFee: { type: number }
+        maxRecipientsPerGift: { type: integer }
+        termsAr: { type: ["string", "null"] }
+        termsEn: { type: ["string", "null"] }
+        privacyAr: { type: ["string", "null"] }
+        privacyEn: { type: ["string", "null"] }
+        returnsAr: { type: ["string", "null"] }
+        returnsEn: { type: ["string", "null"] }
+        supportEmail: { type: string }
+        phone: { type: string }
+        whatsapp: { type: ["string", "null"] }
+        maintenanceMode: { type: boolean }
+        acceptNewOrders: { type: boolean }
+        socialLinks:
+          type: array
+          items:
+            $ref: "#/components/schemas/SocialLink"
+        paymentCod: { type: boolean }
+        paymentCreditCard: { type: boolean }
+        paymentVodafone: { type: boolean }
+        paymentVodafoneWallet: { type: ["string", "null"] }
+        paymentVodafoneInstructions: { type: ["string", "null"] }
+        paymentInstapay: { type: boolean }
+        paymentInstapayName: { type: ["string", "null"] }
+        paymentInstapayId: { type: ["string", "null"] }
+        paymentInstapayInstructions: { type: ["string", "null"] }
 
     SettingsUpdate:
       type: object
       properties:
-        storeName: { type: string }
-        storePhone: { type: string }
-        storeEmail: { type: string }
-        deliveryFeeDefault: { type: number }
-        deliveryFeeExpress: { type: number }
-        deliveryNote: { type: string }
-        bankAccountInfo: { type: string }
+        storeNameAr: { type: string }
+        storeNameEn: { type: string }
+        timezone: { type: string }
+        defaultLanguage: { type: string }
+        logoUrl: { type: string }
+        faviconUrl: { type: string }
+        currencyCode: { type: string }
+        currencySymbol: { type: string }
+        deliveryTimeAr: { type: string }
+        deliveryTimeEn: { type: string }
+        deliveryFee: { type: number }
+        freeDeliveryThreshold: { type: number }
+        giftLinkExpiryDays: { type: integer }
+        maxGiftMessageLength: { type: integer }
+        defaultGiftMessageAr: { type: string }
+        defaultGiftMessageEn: { type: string }
+        enableGiftWrapping: { type: boolean }
+        wrappingFee: { type: number }
+        greetingCardFee: { type: number }
+        maxRecipientsPerGift: { type: integer }
+        termsAr: { type: string }
+        termsEn: { type: string }
+        privacyAr: { type: string }
+        privacyEn: { type: string }
+        returnsAr: { type: string }
+        returnsEn: { type: string }
+        supportEmail: { type: string }
+        phone: { type: string }
+        whatsapp: { type: string }
+        maintenanceMode: { type: boolean }
+        acceptNewOrders: { type: boolean }
+        socialLinks:
+          type: array
+          items:
+            $ref: "#/components/schemas/SocialLink"
+        paymentCod: { type: boolean }
+        paymentCreditCard: { type: boolean }
+        paymentVodafone: { type: boolean }
+        paymentVodafoneWallet: { type: string }
+        paymentVodafoneInstructions: { type: string }
+        paymentInstapay: { type: boolean }
+        paymentInstapayName: { type: string }
+        paymentInstapayId: { type: string }
+        paymentInstapayInstructions: { type: string }

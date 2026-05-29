@@ -33,3 +33,4 @@ export * from './productInput';
 export * from './productUpdate';
 export * from './settings';
 export * from './settingsUpdate';
+export * from './socialLink';

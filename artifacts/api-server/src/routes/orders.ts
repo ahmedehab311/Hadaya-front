@@ -20,7 +20,7 @@ router.post("/orders", async (req, res): Promise<void> => {
   const { items, paymentMethod, customerName, customerPhone, customerEmail, notes, isGift, recipientAddress, recipientCity } = parsed.data;
 
   const [settings] = await db.select().from(settingsTable).limit(1);
-  const deliveryFee = settings ? Number(settings.deliveryFeeDefault) : 25;
+  const deliveryFee = settings ? Number(settings.deliveryFee) : 25;
 
   let subtotal = 0;
   const orderItemsData = [];
