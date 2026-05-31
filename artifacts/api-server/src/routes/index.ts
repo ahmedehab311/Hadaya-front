@@ -4,6 +4,7 @@ import { hasDatabaseUrl } from "@workspace/db";
 import mockRouter from "../mock-router";
 
 import healthRouter from "./health";
+import authRouter from "./auth";
 import productsRouter from "./products";
 import collectionsRouter from "./collections";
 import ordersRouter from "./orders";
@@ -20,6 +21,7 @@ if (!hasDatabaseUrl) {
   router.use(mockRouter);
 } else {
   router.use(healthRouter);
+  router.use(authRouter);
   router.use(productsRouter);
   router.use(collectionsRouter);
   router.use(ordersRouter);

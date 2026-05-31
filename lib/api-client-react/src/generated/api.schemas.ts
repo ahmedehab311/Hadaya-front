@@ -376,6 +376,33 @@ export interface SettingsUpdate {
   paymentInstapayInstructions?: string;
 }
 
+export interface RegisterRequest {
+  /** @minLength 2 */
+  name: string;
+  email: string;
+  /** @minLength 8 */
+  phone: string;
+  /** @minLength 6 */
+  password: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface AuthUser {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  createdAt: string;
+}
+
+export interface ErrorResponse {
+  error: string;
+}
+
 export type ListProductsParams = {
 /**
  * @nullable

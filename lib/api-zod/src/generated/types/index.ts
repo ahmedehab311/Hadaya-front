@@ -8,16 +8,19 @@
 
 export * from './activityItem';
 export * from './activityItemType';
+export * from './authUser';
 export * from './collection';
 export * from './collectionInput';
 export * from './collectionUpdate';
 export * from './collectionWithProducts';
 export * from './dashboardStats';
+export * from './errorResponse';
 export * from './giftAddressInput';
 export * from './giftInfo';
 export * from './healthStatus';
 export * from './listAdminOrdersParams';
 export * from './listProductsParams';
+export * from './loginRequest';
 export * from './order';
 export * from './orderInput';
 export * from './orderInputItemsItem';
@@ -31,6 +34,7 @@ export * from './orderUpdateStatus';
 export * from './product';
 export * from './productInput';
 export * from './productUpdate';
+export * from './registerRequest';
 export * from './settings';
 export * from './settingsUpdate';
 export * from './socialLink';

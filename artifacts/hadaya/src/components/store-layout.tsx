@@ -1,25 +1,41 @@
 import { Link, useLocation } from "wouter";
-import { ShoppingCart, Sun, Moon, Globe, Gift, Package, Menu, X } from "lucide-react";
+import { ShoppingCart, Sun, Moon, Globe, Gift, Package, Menu, X, User, LogOut, LogIn } from "lucide-react";
 import { useState } from "react";
 import { useLanguage } from "@/contexts/language-context";
 import { useTheme } from "@/contexts/theme-context";
 import { useCart } from "@/contexts/cart-context";
+import { useAuth } from "@/contexts/auth-context";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useToast } from "@/hooks/use-toast";
 import { type ReactNode } from "react";
 
 export function StoreLayout({ children }: { children: ReactNode }) {
   const { lang, setLang, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const { itemCount } = useCart();
+  const { user, isLoggedIn, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [location] = useLocation();
+  const { toast } = useToast();
 
   const navLinks = [
     { href: "/", label: t("الرئيسية", "Home") },
     { href: "/products", label: t("المنتجات", "Products") },
     { href: "/collections", label: t("المجموعات", "Collections") },
   ];
+
+  const handleLogout = async () => {
+    await logout();
+    toast({ title: t("تم تسجيل الخروج", "Logged out successfully") });
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -59,6 +75,43 @@ export function StoreLayout({ children }: { children: ReactNode }) {
             <Button variant="ghost" size="icon" onClick={toggleTheme} data-testid="button-toggle-theme">
               {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
             </Button>
+
+            {/* Account button */}
+            {isLoggedIn && user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="relative" data-testid="button-account">
+                    <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center">
+                      <span className="text-xs font-bold text-primary">
+                        {user.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <div className="px-3 py-2">
+                    <p className="text-sm font-semibold text-foreground truncate">{user.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="text-destructive focus:text-destructive gap-2 cursor-pointer"
+                    data-testid="button-logout"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    {t("تسجيل الخروج", "Sign Out")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link href="/login">
+                <Button variant="ghost" size="icon" data-testid="button-login-nav" title={t("تسجيل الدخول", "Sign In")}>
+                  <LogIn className="w-4 h-4" />
+                </Button>
+              </Link>
+            )}
+
             <Link href="/cart">
               <Button variant="ghost" size="icon" className="relative" data-testid="button-cart">
                 <ShoppingCart className="w-4 h-4" />
@@ -94,6 +147,24 @@ export function StoreLayout({ children }: { children: ReactNode }) {
                 {link.label}
               </Link>
             ))}
+            <div className="border-t border-border pt-3">
+              {isLoggedIn && user ? (
+                <button
+                  onClick={() => { handleLogout(); setMenuOpen(false); }}
+                  className="flex items-center gap-2 text-sm text-destructive py-1"
+                >
+                  <LogOut className="w-4 h-4" />
+                  {t("تسجيل الخروج", "Sign Out")}
+                </button>
+              ) : (
+                <Link href="/login" onClick={() => setMenuOpen(false)}>
+                  <div className="flex items-center gap-2 text-sm text-primary py-1">
+                    <LogIn className="w-4 h-4" />
+                    {t("تسجيل الدخول", "Sign In")}
+                  </div>
+                </Link>
+              )}
+            </div>
           </div>
         )}
       </header>

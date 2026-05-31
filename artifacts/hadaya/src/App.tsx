@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/contexts/language-context";
 import { ThemeProvider } from "@/contexts/theme-context";
 import { CartProvider } from "@/contexts/cart-context";
+import { AuthProvider } from "@/contexts/auth-context";
 
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/home";
@@ -16,6 +17,8 @@ import CartPage from "@/pages/cart";
 import CheckoutPage from "@/pages/checkout";
 import OrderStatusPage from "@/pages/order-status";
 import GiftPage from "@/pages/gift";
+import LoginPage from "@/pages/login";
+import RegisterPage from "@/pages/register";
 
 import AdminDashboardPage from "@/pages/admin/dashboard";
 import AdminOrdersPage from "@/pages/admin/orders";
@@ -35,6 +38,10 @@ const queryClient = new QueryClient({
 function Router() {
   return (
     <Switch>
+      {/* Auth routes */}
+      <Route path="/login" component={LoginPage} />
+      <Route path="/register" component={RegisterPage} />
+
       {/* Store routes */}
       <Route path="/" component={HomePage} />
       <Route path="/products" component={ProductsPage} />
@@ -66,14 +73,16 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <LanguageProvider>
-          <CartProvider>
-            <TooltipProvider>
-              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                <Router />
-              </WouterRouter>
-              <Toaster />
-            </TooltipProvider>
-          </CartProvider>
+          <AuthProvider>
+            <CartProvider>
+              <TooltipProvider>
+                <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                  <Router />
+                </WouterRouter>
+                <Toaster />
+              </TooltipProvider>
+            </CartProvider>
+          </AuthProvider>
         </LanguageProvider>
       </ThemeProvider>
     </QueryClientProvider>

@@ -17,6 +17,54 @@ export const HealthCheckResponse = zod.object({
 
 
 /**
+ * @summary Register a new customer account
+ */
+export const registerBodyNameMin = 2;
+
+export const registerBodyPhoneMin = 8;
+
+export const registerBodyPasswordMin = 6;
+
+
+
+export const RegisterBody = zod.object({
+  "name": zod.string().min(registerBodyNameMin),
+  "email": zod.string().email(),
+  "phone": zod.string().min(registerBodyPhoneMin),
+  "password": zod.string().min(registerBodyPasswordMin)
+})
+
+
+/**
+ * @summary Log in with email and password
+ */
+export const LoginBody = zod.object({
+  "email": zod.string().email(),
+  "password": zod.string()
+})
+
+export const LoginResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "phone": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Get the currently logged-in user
+ */
+export const GetMeResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "phone": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
  * @summary List all products
  */
 export const ListProductsQueryParams = zod.object({
