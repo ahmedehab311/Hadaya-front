@@ -6,6 +6,7 @@ import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StoreLayout } from "@/components/store-layout";
+import { MOCK_FEATURED, MOCK_COLLECTIONS } from "@/data/mock-data";
 
 function HeroSection() {
   const { t, isRTL } = useLanguage();
@@ -79,7 +80,7 @@ function HeroSection() {
                 <Icon className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold text-foreground">{feature.ar && feature.en ? (window.document.documentElement.lang === "ar" ? feature.ar : feature.en) : feature.ar}</h3>
+                <h3 className="font-semibold text-foreground">{window.document.documentElement.lang === "ar" ? feature.ar : feature.en}</h3>
                 <p className="text-sm text-muted-foreground mt-0.5">{window.document.documentElement.lang === "ar" ? feature.desc.ar : feature.desc.en}</p>
               </div>
             </div>
@@ -91,17 +92,22 @@ function HeroSection() {
 }
 
 export default function HomePage() {
-  const { t, isRTL } = useLanguage();
+  const { t, isRTL, lang } = useLanguage();
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
-  const { data: featured, isLoading: loadingFeatured } = useGetFeaturedProducts();
-  const { data: collections, isLoading: loadingCollections } = useListCollections();
+
+  const { data: featuredApi, isLoading: loadingFeatured } = useGetFeaturedProducts();
+  const { data: collectionsApi, isLoading: loadingCollections } = useListCollections();
+
+  // استخدم الـ API data لو موجودة، وإلا الـ mock data
+  const featured = featuredApi && featuredApi.length > 0 ? featuredApi : (!loadingFeatured ? MOCK_FEATURED : []);
+  const collections = collectionsApi && collectionsApi.length > 0 ? collectionsApi : (!loadingCollections ? MOCK_COLLECTIONS : []);
 
   return (
     <StoreLayout>
       <HeroSection />
 
       {/* Featured Products */}
-      {/* <section className="max-w-7xl mx-auto px-4 py-16">
+      <section className="max-w-7xl mx-auto px-4 py-16">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl md:text-3xl font-bold font-serif text-foreground">
             {t("المنتجات المميزة", "Featured Products")}
@@ -120,113 +126,15 @@ export default function HomePage() {
               <Skeleton key={i} className="aspect-square rounded-xl" />
             ))}
           </div>
-        ) : featured && featured.length > 0 ? (
+        ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {featured?.slice(0, 8)?.map((product) => (
+            {featured.slice(0, 8).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
-        ) : (
-          <div className="text-center py-12 text-muted-foreground">
-            {t("لا توجد منتجات مميزة حالياً", "No featured products yet")}
-          </div>
         )}
-      </section> */}
-{/* Featured Products */}
-<section className="max-w-7xl mx-auto px-4 py-16">
-  <div className="flex items-center justify-between mb-8">
-    <h2 className="text-2xl md:text-3xl font-bold font-serif text-foreground">
-      {t("المنتجات المميزة", "Featured Products")}
-    </h2>
-    <Link href="/products">
-      <Button variant="ghost" className="gap-1.5 text-primary" data-testid="link-all-products">
-        {t("عرض الكل", "View All")}
-        <Arrow className="w-4 h-4" />
-      </Button>
-    </Link>
-  </div>
+      </section>
 
-  {loadingFeatured ? (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <Skeleton key={i} className="aspect-square rounded-xl" />
-      ))}
-    </div>
-  ) : Array.isArray(featured) && featured.length > 0 ? (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {featured.slice(0, 8).map((product) => (
-        <ProductCard key={product.id} product={product} />
-      ))}
-    </div>
-  ) : featured && typeof featured === "object" && Array.isArray((featured as any).products) && (featured as any).products.length > 0 ? (
-    // الـ Fallback ده تحسباً لو الـ API بيرجع البيانات جوة داتا بروبيرتي اسمها products
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {(featured as any).products.slice(0, 8).map((product: any) => (
-        <ProductCard key={product.id} product={product} />
-      ))}
-    </div>
-  ) : (
-    <div className="text-center py-12 text-muted-foreground">
-      {t("لا توجد منتجات مميزة حالياً", "No featured products yet")}
-    </div>
-  )}
-</section>
-      {/* Collections */}
-      {/* <section className="bg-muted/30 py-16">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold font-serif text-foreground">
-              {t("المجموعات", "Collections")}
-            </h2>
-            <Link href="/collections">
-              <Button variant="ghost" className="gap-1.5 text-primary" data-testid="link-all-collections">
-                {t("عرض الكل", "View All")}
-                <Arrow className="w-4 h-4" />
-              </Button>
-            </Link>
-          </div>
-
-          {loadingCollections ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={i} className="h-48 rounded-xl" />
-              ))}
-            </div>
-          ) : collections && collections.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {collections.slice(0, 3).map((col) => (
-                <Link key={col.id} href={`/collections/${col.id}`}>
-                  <div
-                    className="group relative bg-card border border-card-border rounded-2xl overflow-hidden h-48 cursor-pointer hover:shadow-lg transition-all"
-                    data-testid={`card-collection-${col.id}`}
-                  >
-                    {col.imageUrl ? (
-                      <img
-                        src={col.imageUrl}
-                        alt={window.document.documentElement.lang === "ar" ? col.nameAr : col.nameEn}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-primary/10 to-accent/20" />
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
-                    <div className="absolute bottom-0 start-0 p-5">
-                      <h3 className="text-white font-bold text-lg font-serif">
-                        {window.document.documentElement.lang === "ar" ? col.nameAr : col.nameEn}
-                      </h3>
-                      <p className="text-white/80 text-sm">{col.productCount} {t("منتج", "products")}</p>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              {t("لا توجد مجموعات حالياً", "No collections yet")}
-            </div>
-          )}
-        </div>
-      </section> */}
       {/* Collections */}
       <section className="bg-muted/30 py-16">
         <div className="max-w-7xl mx-auto px-4">
@@ -248,7 +156,7 @@ export default function HomePage() {
                 <Skeleton key={i} className="h-48 rounded-xl" />
               ))}
             </div>
-          ) : Array.isArray(collections) && collections.length > 0 ? (
+          ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {collections.slice(0, 3).map((col) => (
                 <Link key={col.id} href={`/collections/${col.id}`}>
@@ -259,7 +167,7 @@ export default function HomePage() {
                     {col.imageUrl ? (
                       <img
                         src={col.imageUrl}
-                        alt={window.document.documentElement.lang === "ar" ? col.nameAr : col.nameEn}
+                        alt={lang === "ar" ? col.nameAr : col.nameEn}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     ) : (
@@ -268,34 +176,13 @@ export default function HomePage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
                     <div className="absolute bottom-0 start-0 p-5">
                       <h3 className="text-white font-bold text-lg font-serif">
-                        {window.document.documentElement.lang === "ar" ? col.nameAr : col.nameEn}
+                        {lang === "ar" ? col.nameAr : col.nameEn}
                       </h3>
                       <p className="text-white/80 text-sm">{col.productCount} {t("منتج", "products")}</p>
                     </div>
                   </div>
                 </Link>
               ))}
-            </div>
-          ) : collections && typeof collections === "object" && Array.isArray((collections as any).collections) && (collections as any).collections.length > 0 ? (
-            // Fallback تحسباً لو الـ API لافف الـ array جوة object وباسمه collections
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {(collections as any).collections.slice(0, 3).map((col: any) => (
-                <Link key={col.id} href={`/collections/${col.id}`}>
-                  <div className="group relative bg-card border border-card-border rounded-2xl overflow-hidden h-48 cursor-pointer hover:shadow-lg transition-all">
-                    <div className="w-full h-full bg-gradient-to-br from-primary/10 to-accent/20" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
-                    <div className="absolute bottom-0 start-0 p-5">
-                      <h3 className="text-white font-bold text-lg font-serif">
-                        {window.document.documentElement.lang === "ar" ? col.nameAr : col.nameEn}
-                      </h3>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              {t("لا توجد مجموعات حالياً", "No collections yet")}
             </div>
           )}
         </div>

@@ -8,17 +8,31 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { MOCK_PRODUCTS, MOCK_COLLECTIONS } from "@/data/mock-data";
 
 export default function ProductsPage() {
   const { t, lang } = useLanguage();
   const [search, setSearch] = useState("");
   const [selectedCollection, setSelectedCollection] = useState<number | null>(null);
 
-  const { data: products, isLoading } = useListProducts({
+  const { data: productsApi, isLoading } = useListProducts({
     collectionId: selectedCollection ?? undefined,
     search: search || undefined,
   });
-  const { data: collections } = useListCollections();
+  const { data: collectionsApi } = useListCollections();
+
+  // استخدم الـ API data لو موجودة، وإلا الـ mock — لكن بس لو مفيش فلتر/سيرش مطبق
+  const hasFilter = !!search || selectedCollection !== null;
+  const collections = collectionsApi && collectionsApi.length > 0 ? collectionsApi : MOCK_COLLECTIONS;
+
+  let products = productsApi ?? [];
+  if (!isLoading && products.length === 0 && !hasFilter) {
+    // مفيش بيانات من الـ API ومفيش فلتر → اعرض الـ mock
+    products = MOCK_PRODUCTS;
+  } else if (!isLoading && products.length === 0 && hasFilter) {
+    // في فلتر لكن ما لقاش نتايج → لا تعرض mock، اعرض "لا توجد نتائج"
+    products = [];
+  }
 
   return (
     <StoreLayout>
@@ -49,7 +63,7 @@ export default function ProductsPage() {
             >
               {t("الكل", "All")}
             </Button>
-            {collections?.map((col) => (
+            {collections.map((col) => (
               <Button
                 key={col.id}
                 variant={selectedCollection === col.id ? "default" : "outline"}
@@ -58,7 +72,7 @@ export default function ProductsPage() {
                 data-testid={`filter-collection-${col.id}`}
               >
                 {lang === "ar" ? col.nameAr : col.nameEn}
-                <Badge variant="secondary" className="ms-1.5 text-xs">{col.productCount}</Badge>
+                <Badge variant="secondary" className="ms-1.5 text-xs">{col.productCount ?? 0}</Badge>
               </Button>
             ))}
           </div>
@@ -70,7 +84,7 @@ export default function ProductsPage() {
               <Skeleton key={i} className="aspect-square rounded-xl" />
             ))}
           </div>
-        ) : products && products.length > 0 ? (
+        ) : products.length > 0 ? (
           <>
             <p className="text-sm text-muted-foreground mb-4">
               {products.length} {t("منتج", "products")}

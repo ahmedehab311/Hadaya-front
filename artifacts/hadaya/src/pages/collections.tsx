@@ -1,13 +1,16 @@
 import { Link } from "wouter";
-import { Layers } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
 import { useListCollections } from "@workspace/api-client-react";
 import { StoreLayout } from "@/components/store-layout";
 import { Skeleton } from "@/components/ui/skeleton";
+import { MOCK_COLLECTIONS } from "@/data/mock-data";
 
 export default function CollectionsPage() {
   const { t, lang } = useLanguage();
-  const { data: collections, isLoading } = useListCollections();
+  const { data: collectionsApi, isLoading } = useListCollections();
+
+  // استخدم الـ API data لو موجودة، وإلا الـ mock data
+  const collections = collectionsApi && collectionsApi.length > 0 ? collectionsApi : (!isLoading ? MOCK_COLLECTIONS : []);
 
   return (
     <StoreLayout>
@@ -22,7 +25,7 @@ export default function CollectionsPage() {
               <Skeleton key={i} className="h-56 rounded-2xl" />
             ))}
           </div>
-        ) : collections && collections.length > 0 ? (
+        ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {collections.map((col) => (
               <Link key={col.id} href={`/collections/${col.id}`}>
@@ -50,17 +53,12 @@ export default function CollectionsPage() {
                       </p>
                     )}
                     <p className="text-white/70 text-xs mt-2">
-                      {col.productCount} {t("منتج", "products")}
+                      {col.productCount ?? 0} {t("منتج", "products")}
                     </p>
                   </div>
                 </div>
               </Link>
             ))}
-          </div>
-        ) : (
-          <div className="text-center py-24">
-            <Layers className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">{t("لا توجد مجموعات حالياً", "No collections yet")}</p>
           </div>
         )}
       </div>
