@@ -53,6 +53,20 @@ app.use(
   }),
 );
 
+// API key guard — only active when API_KEY env var is set.
+// Every request to /api must carry the matching `api-key` header.
+if (process.env.API_KEY) {
+  const expectedKey = process.env.API_KEY;
+  app.use("/api", (req, res, next) => {
+    const provided = req.headers["api-key"];
+    if (provided !== expectedKey) {
+      res.status(401).json({ error: "Invalid or missing api-key header" });
+      return;
+    }
+    next();
+  });
+}
+
 app.use("/api", router);
 
 export default app;

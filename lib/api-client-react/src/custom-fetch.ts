@@ -17,6 +17,19 @@ const DEFAULT_JSON_ACCEPT = "application/json, application/problem+json";
 
 let _baseUrl: string | null = null;
 let _authTokenGetter: AuthTokenGetter | null = null;
+let _apiKey: string | null = null;
+
+/**
+ * Set a static API key that is sent as an `api-key` request header on every
+ * outgoing request.  Call once at app startup, e.g.:
+ *
+ *   setApiKey(import.meta.env.VITE_API_KEY ?? null);
+ *
+ * Pass `null` to clear the key.
+ */
+export function setApiKey(key: string | null): void {
+  _apiKey = key || null;
+}
 
 /**
  * Set a base URL that is prepended to every relative request URL
@@ -347,6 +360,11 @@ export async function customFetch<T = unknown>(
 
   if (responseType === "json" && !headers.has("accept")) {
     headers.set("accept", DEFAULT_JSON_ACCEPT);
+  }
+
+  // Attach static API key header when set.
+  if (_apiKey && !headers.has("api-key")) {
+    headers.set("api-key", _apiKey);
   }
 
   // Attach bearer token when an auth getter is configured and no
