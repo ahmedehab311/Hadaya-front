@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "wouter";
 import { ShoppingCart, Trash2, Plus, Minus, ArrowRight, ArrowLeft } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
@@ -6,6 +7,16 @@ import { useGetSettings } from "@workspace/api-client-react";
 import { StoreLayout } from "@/components/store-layout";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function CartPage() {
   const { t, lang, isRTL } = useLanguage();
@@ -13,8 +24,35 @@ export default function CartPage() {
   const { data: settings } = useGetSettings();
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
 
+  const [pendingRemoveId, setPendingRemoveId] = useState<number | null>(null);
+
   const deliveryFee = settings ? settings.deliveryFee : 25;
   const total = subtotal + deliveryFee;
+
+  const pendingItem = items.find((i) => i.productId === pendingRemoveId);
+
+  const handleDecrease = (productId: number, currentQty: number) => {
+    if (currentQty <= 1) {
+      setPendingRemoveId(productId);
+    } else {
+      updateQty(productId, currentQty - 1);
+    }
+  };
+
+  const handleRemoveClick = (productId: number) => {
+    setPendingRemoveId(productId);
+  };
+
+  const confirmRemove = () => {
+    if (pendingRemoveId !== null) {
+      removeItem(pendingRemoveId);
+      setPendingRemoveId(null);
+    }
+  };
+
+  const cancelRemove = () => {
+    setPendingRemoveId(null);
+  };
 
   return (
     <StoreLayout>
@@ -60,7 +98,7 @@ export default function CartPage() {
                       <div className="flex items-center border border-border rounded-lg overflow-hidden">
                         <button
                           className="p-1.5 hover:bg-muted transition-colors"
-                          onClick={() => updateQty(item.productId, item.quantity - 1)}
+                          onClick={() => handleDecrease(item.productId, item.quantity)}
                           data-testid={`button-decrease-${item.productId}`}
                         >
                           <Minus className="w-3.5 h-3.5" />
@@ -78,7 +116,7 @@ export default function CartPage() {
                       </div>
                       <button
                         className="text-destructive hover:text-destructive/80 transition-colors p-1.5"
-                        onClick={() => removeItem(item.productId)}
+                        onClick={() => handleRemoveClick(item.productId)}
                         data-testid={`button-remove-${item.productId}`}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -128,6 +166,37 @@ export default function CartPage() {
           </div>
         )}
       </div>
+
+      {/* Confirm remove dialog */}
+      <AlertDialog open={pendingRemoveId !== null} onOpenChange={(open) => { if (!open) cancelRemove(); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {t("حذف المنتج من السلة؟", "Remove item from cart?")}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingItem
+                ? t(
+                    `هل أنت متأكد أنك تريد حذف "${lang === "ar" ? pendingItem.nameAr : pendingItem.nameEn}" من السلة؟`,
+                    `Are you sure you want to remove "${lang === "ar" ? pendingItem.nameAr : pendingItem.nameEn}" from your cart?`
+                  )
+                : t("هل أنت متأكد؟", "Are you sure?")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelRemove} data-testid="dialog-cancel-remove">
+              {t("لا، إبقه", "No, keep it")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmRemove}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              data-testid="dialog-confirm-remove"
+            >
+              {t("نعم، احذفه", "Yes, remove it")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </StoreLayout>
   );
 }
