@@ -47,22 +47,32 @@ function HeroSection() {
           </div>
         </div>
         <div className="flex-1 flex justify-center">
-          <div className="relative w-72 h-72 md:w-96 md:h-96">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-3xl" />
-            <div className="relative grid grid-cols-2 gap-4 p-8">
-              {[
-                { bg: "bg-primary/10", icon: "🎁" },
-                { bg: "bg-accent/10", icon: "✨" },
-                { bg: "bg-secondary/20", icon: "💝" },
-                { bg: "bg-primary/5", icon: "🌹" },
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  className={`${item.bg} rounded-2xl aspect-square flex items-center justify-center text-4xl shadow-sm border border-border/30`}
-                >
-                  {item.icon}
-                </div>
-              ))}
+          <div className="relative w-[320px] h-[320px] md:w-[400px] md:h-[400px] flex items-center justify-center">
+            {/* Soft glow */}
+            <div className="absolute w-[260px] h-[260px] md:w-[320px] md:h-[320px] rounded-full blur-[60px] bg-primary/15" />
+            {/* Back left — luxury gift set */}
+            <div className="absolute w-[150px] h-[150px] md:w-[190px] md:h-[190px] bg-white p-1.5 shadow-lg -translate-x-[70px] md:-translate-x-[80px] -translate-y-[35px] md:-translate-y-[40px] -rotate-[3deg] transition-all duration-500 hover:scale-105 hover:z-20 hover:shadow-xl">
+              <img
+                src="https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=260&h=260&fit=crop&crop=center&q=80&auto=format"
+                alt="Luxury gift set"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            {/* Back right — chocolates */}
+            <div className="absolute w-[150px] h-[150px] md:w-[190px] md:h-[190px] bg-white p-1.5 shadow-lg translate-x-[70px] md:translate-x-[80px] -translate-y-[20px] rotate-[1deg] transition-all duration-500 hover:scale-105 hover:z-20 hover:shadow-xl">
+              <img
+                src="https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=260&h=260&fit=crop&crop=center&q=80&auto=format"
+                alt="Luxury chocolates"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            {/* Front center — wrapped gift box */}
+            <div className="absolute w-[180px] h-[180px] md:w-[225px] md:h-[225px] bg-white p-2 shadow-2xl translate-y-[28px] md:translate-y-[32px] -rotate-[1.5deg] z-10 transition-all duration-500 hover:scale-[1.03] hover:-translate-y-[4px]">
+              <img
+                src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=300&h=300&fit=crop&crop=center&q=80&auto=format"
+                alt="Wrapped gift box"
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
         </div>
