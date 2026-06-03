@@ -513,7 +513,7 @@ export const getGetFeaturedProductsUrl = () => {
 
 
 
-  return `/api/products/featured`
+  return `/api/products`
 }
 
 /**
@@ -536,7 +536,7 @@ export const getFeaturedProducts = async ( options?: RequestInit): Promise<Produ
 
 export const getGetFeaturedProductsQueryKey = () => {
     return [
-    `/api/products/featured`
+    `/api/products`
     ] as const;
     }
 

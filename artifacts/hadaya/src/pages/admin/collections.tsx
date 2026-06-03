@@ -97,7 +97,7 @@ export default function AdminCollectionsPage() {
           </div>
         ) : collections && collections.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {collections.map((col) => (
+            {collections?.map((col) => (
               <div key={col.id} className="bg-card border border-card-border rounded-xl p-4 flex gap-4" data-testid={`card-admin-collection-${col.id}`}>
                 <div className="w-16 h-16 rounded-lg bg-muted overflow-hidden shrink-0">
                   {col.imageUrl ? (

@@ -12,7 +12,7 @@ import {
 
 const router: IRouter = Router();
 
-router.get("/admin/collections", async (_req, res): Promise<void> => {
+router.get("/collections", async (_req, res): Promise<void> => {
   const rows = await db
     .select({
       id: collectionsTable.id,

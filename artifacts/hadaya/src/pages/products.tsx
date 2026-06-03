@@ -15,24 +15,15 @@ export default function ProductsPage() {
   const [search, setSearch] = useState("");
   const [selectedCollection, setSelectedCollection] = useState<number | null>(null);
 
-  const { data: productsApi, isLoading } = useListProducts({
+  const { data: productsApi, isLoading, isError } = useListProducts({
     collectionId: selectedCollection ?? undefined,
     search: search || undefined,
   });
-  const { data: collectionsApi } = useListCollections();
+  const { data: collectionsApi, isError: isErrorCollections } = useListCollections();
 
-  // استخدم الـ API data لو موجودة، وإلا الـ mock — لكن بس لو مفيش فلتر/سيرش مطبق
-  const hasFilter = !!search || selectedCollection !== null;
-  const collections = collectionsApi && collectionsApi.length > 0 ? collectionsApi : MOCK_COLLECTIONS;
-
-  let products = productsApi ?? [];
-  if (!isLoading && products.length === 0 && !hasFilter) {
-    // مفيش بيانات من الـ API ومفيش فلتر → اعرض الـ mock
-    products = MOCK_PRODUCTS;
-  } else if (!isLoading && products.length === 0 && hasFilter) {
-    // في فلتر لكن ما لقاش نتايج → لا تعرض mock، اعرض "لا توجد نتائج"
-    products = [];
-  }
+  // عرض API data عند النجاح، عرض mock فقط عند الخطأ
+  const collections = isErrorCollections ? MOCK_COLLECTIONS : (collectionsApi ?? []);
+  const products = isError ? MOCK_PRODUCTS : (productsApi ?? []);
 
   return (
     <StoreLayout>
@@ -63,7 +54,7 @@ export default function ProductsPage() {
             >
               {t("الكل", "All")}
             </Button>
-            {collections.map((col) => (
+            {collections?.map((col) => (
               <Button
                 key={col.id}
                 variant={selectedCollection === col.id ? "default" : "outline"}

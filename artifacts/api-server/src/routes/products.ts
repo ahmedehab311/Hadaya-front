@@ -53,7 +53,7 @@ router.get("/products", async (req, res): Promise<void> => {
   res.json(ListProductsResponse.parse(mapped));
 });
 
-router.get("/products/featured", async (_req, res): Promise<void> => {
+router.get("/products", async (_req, res): Promise<void> => {
   const rows = await db
     .select({
       id: productsTable.id,

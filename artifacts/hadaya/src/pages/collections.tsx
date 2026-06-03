@@ -7,10 +7,10 @@ import { MOCK_COLLECTIONS } from "@/data/mock-data";
 
 export default function CollectionsPage() {
   const { t, lang } = useLanguage();
-  const { data: collectionsApi, isLoading } = useListCollections();
+  const { data: collectionsApi, isLoading, isError } = useListCollections();
 
-  // استخدم الـ API data لو موجودة، وإلا الـ mock data
-  const collections = collectionsApi && collectionsApi.length > 0 ? collectionsApi : (!isLoading ? MOCK_COLLECTIONS : []);
+  // عرض API data طالما نجحت، عرض mock فقط عند الخطأ
+  const collections = isError ? MOCK_COLLECTIONS : (collectionsApi ?? []);
 
   return (
     <StoreLayout>
@@ -27,7 +27,7 @@ export default function CollectionsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {collections.map((col) => (
+            {collections?.map((col) => (
               <Link key={col.id} href={`/collections/${col.id}`}>
                 <div
                   className="group relative bg-card border border-card-border rounded-2xl overflow-hidden h-56 cursor-pointer hover:shadow-lg transition-all"
