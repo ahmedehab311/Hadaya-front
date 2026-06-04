@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { ShoppingCart, Sun, Moon, Globe, Gift, Package, Menu, X, User, LogOut, LogIn, Phone, Mail, MapPin, Clock } from "lucide-react";
+import { ShoppingCart, Sun, Moon, Globe, Gift, Package, Menu, X, User, LogOut, LogIn } from "lucide-react";
 import { useState } from "react";
 import { useLanguage } from "@/contexts/language-context";
 import { useTheme } from "@/contexts/theme-context";
@@ -169,77 +169,17 @@ export function StoreLayout({ children }: { children: ReactNode }) {
         )}
       </header>
       <main className="flex-1">{children}</main>
-      <footer className="border-t border-border bg-muted/30 py-12 mt-12">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
-            {/* Brand */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Gift className="w-5 h-5 text-primary" />
-                <span className="font-bold text-primary font-serif text-lg">{t("هدايا", "Hadaya")}</span>
-              </div>
-              <p className="text-muted-foreground leading-relaxed">
-                {t(
-                  "متجر هدايا مميز يقدّم لك أرقى المنتجات لتعبّر بها عن مشاعرك.",
-                  "A curated gift store offering the finest products to express your feelings.",
-                )}
-              </p>
-            </div>
-
-            {/* Quick links */}
-            <div className="space-y-3">
-              <h4 className="font-semibold text-foreground">{t("روابط سريعة", "Quick Links")}</h4>
-              <ul className="space-y-2 text-muted-foreground">
-                {[
-                  { href: "/about", ar: "من نحن", en: "About Us" },
-                  { href: "/terms", ar: "الشروط والأحكام", en: "Terms & Conditions" },
-                  { href: "/privacy", ar: "سياسة الخصوصية", en: "Privacy Policy" },
-                  { href: "/returns", ar: "سياسة الاسترجاع", en: "Return Policy" },
-                  { href: "/faq", ar: "الأسئلة الشائعة", en: "FAQ" },
-                ].map((l) => (
-                  <li key={l.href}>
-                    <Link href={l.href} className="hover:text-primary transition-colors">
-                      {t(l.ar, l.en)}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Contact us */}
-            <div className="space-y-3">
-              <h4 className="font-semibold text-foreground">{t("تواصل معنا", "Contact Us")}</h4>
-              <ul className="space-y-2 text-muted-foreground">
-                <li className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-primary shrink-0" />
-                  <span dir="ltr">+20 100 000 0000</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-primary shrink-0" />
-                  <span>support@hadaya.com</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-primary shrink-0" />
-                  <span>{t("القاهرة، مصر", "Cairo, Egypt")}</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Clock className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                  <div className="flex flex-col">
-                    <span>{t("ساعات العمل", "Working Hours")}</span>
-                    <span className="text-xs">{t("السبت - الخميس: 9 ص - 9 م", "Sat - Thu: 9 AM - 9 PM")}</span>
-                  </div>
-                </li>
-              </ul>
-            </div>
+      <footer className="border-t border-border bg-muted/30 py-8 mt-12">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <Gift className="w-4 h-4 text-primary" />
+            <span className="font-semibold text-primary font-serif">{t("هدايا", "Hadaya")}</span>
           </div>
-
-          <div className="border-t border-border mt-8 pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
-            <span>{t("© 2025 هدايا. جميع الحقوق محفوظة.", "© 2025 Hadaya. All rights reserved.")}</span>
-            <Link href="/admin" className="flex items-center gap-1 hover:text-primary transition-colors">
-              <Package className="w-3.5 h-3.5" />
-              <span>{t("لوحة التحكم", "Admin Panel")}</span>
-            </Link>
-          </div>
+          <span>{t("© 2025 هدايا. جميع الحقوق محفوظة.", "© 2025 Hadaya. All rights reserved.")}</span>
+          <Link href="/admin" className="flex items-center gap-1 hover:text-primary transition-colors">
+            <Package className="w-3.5 h-3.5" />
+            <span>{t("لوحة التحكم", "Admin Panel")}</span>
+          </Link>
         </div>
       </footer>
     </div>

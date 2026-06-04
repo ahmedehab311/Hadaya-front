@@ -14,7 +14,7 @@ import ProductDetailPage from "@/pages/product-detail";
 import CollectionsPage from "@/pages/collections";
 import CollectionDetailPage from "@/pages/collection-detail";
 import CartPage from "@/pages/cart";
-import CheckoutPage from "@/pages/checkout";
+import CheckoutPage from "@/pages/checkout---";
 import OrderStatusPage from "@/pages/order-status";
 import GiftPage from "@/pages/gift";
 import LoginPage from "@/pages/login";
