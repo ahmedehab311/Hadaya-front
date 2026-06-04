@@ -36,7 +36,7 @@ router.get("/collections", async (_req, res): Promise<void> => {
   );
 });
 
-router.post("/admin/collections", async (req, res): Promise<void> => {
+router.post("/collections", async (req, res): Promise<void> => {
   const body = CreateCollectionBody.safeParse(req.body);
   if (!body.success) {
     res.status(400).json({ error: body.error.message });
@@ -61,7 +61,7 @@ router.post("/admin/collections", async (req, res): Promise<void> => {
   });
 });
 
-router.patch("/admin/collections/:id", async (req, res): Promise<void> => {
+router.patch("/collections/:id", async (req, res): Promise<void> => {
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const params = UpdateCollectionParams.safeParse({ id: parseInt(rawId, 10) });
   if (!params.success) {
@@ -107,7 +107,7 @@ router.patch("/admin/collections/:id", async (req, res): Promise<void> => {
   );
 });
 
-router.delete("/admin/collections/:id", async (req, res): Promise<void> => {
+router.delete("/collections/:id", async (req, res): Promise<void> => {
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const params = DeleteCollectionParams.safeParse({ id: parseInt(rawId, 10) });
   if (!params.success) {

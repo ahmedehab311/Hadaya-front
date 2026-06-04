@@ -182,6 +182,35 @@ export const GetCollectionResponse = zod.object({
 
 
 /**
+ * @summary Get menu with published collections and published products only
+ */
+export const ListMenuResponseItem = zod.object({
+  "id": zod.number(),
+  "nameAr": zod.string(),
+  "nameEn": zod.string(),
+  "descriptionAr": zod.string().nullish(),
+  "descriptionEn": zod.string().nullish(),
+  "imageUrl": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "products": zod.array(zod.object({
+  "id": zod.number(),
+  "nameAr": zod.string(),
+  "nameEn": zod.string(),
+  "descriptionAr": zod.string().nullish(),
+  "descriptionEn": zod.string().nullish(),
+  "price": zod.number(),
+  "imageUrl": zod.string(),
+  "inStock": zod.boolean(),
+  "isFeatured": zod.boolean(),
+  "collectionId": zod.number().nullish(),
+  "collectionName": zod.string().nullish(),
+  "createdAt": zod.string()
+}))
+})
+export const ListMenuResponse = zod.array(ListMenuResponseItem)
+
+
+/**
  * @summary Place a new order
  */
 export const CreateOrderBody = zod.object({

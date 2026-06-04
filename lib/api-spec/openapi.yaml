@@ -225,6 +225,22 @@ paths:
         "404":
           description: Not found
 
+  # ─── Customer: Menu (Published Collections with Published Products) ──────
+  /menu:
+    get:
+      operationId: listMenu
+      tags: [collections]
+      summary: Get menu with published collections and published products only
+      responses:
+        "200":
+          description: Menu data with published collections and products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CollectionWithProducts"
+
   # ─── Customer: Orders ─────────────────────────────────────────────────────
   /orders:
     post:
@@ -628,34 +644,54 @@ components:
     # ─── Core Entities ─────────────────────────────────────────────────────
     Product:
       type: object
-      required: [id, nameAr, nameEn, price, imageUrl, inStock, isFeatured, createdAt]
+      required: [id, nameAr, nameEn, price, inStock, isFeatured, createdAt]
       properties:
-        id: { type: integer }
+        id: { type: string }
+        slug: { type: string }
         nameAr: { type: string }
         nameEn: { type: string }
         descriptionAr: { type: ["string", "null"] }
         descriptionEn: { type: ["string", "null"] }
-        price: { type: number }
-        imageUrl: { type: string }
+        price: { type: ["string", "number"] }
+        compareAtPrice: { type: ["string", "number", "null"] }
+        imageUrl: { type: ["string", "null"] }
+        images: { type: array, items: { type: string } }
+        stock: { type: integer }
         inStock: { type: boolean }
-        isFeatured: { type: boolean }
-        collectionId: { type: ["integer", "null"] }
+        isPersonalizable: { type: boolean }
+        giftMessageEnabled: { type: boolean }
+        attributes: { type: ["object", "null"] }
+        isBestSeller: { type: boolean }
+        status: { type: string }
+        metaTitle: { type: ["string", "null"] }
+        metaDescription: { type: ["string", "null"] }
+        collectionId: { type: ["string", "null"] }
         collectionName: { type: ["string", "null"] }
         createdAt: { type: string }
+        updatedAt: { type: string }
 
     ProductInput:
       type: object
-      required: [nameAr, nameEn, price, imageUrl]
+      required: [nameAr, nameEn, price]
       properties:
         nameAr: { type: string, minLength: 1 }
         nameEn: { type: string, minLength: 1 }
         descriptionAr: { type: string }
         descriptionEn: { type: string }
-        price: { type: number, minimum: 0 }
+        price: { type: ["string", "number"], minimum: 0 }
+        compareAtPrice: { type: ["string", "number"] }
         imageUrl: { type: string }
+        images: { type: array, items: { type: string } }
+        stock: { type: integer }
         inStock: { type: boolean }
-        isFeatured: { type: boolean }
-        collectionId: { type: ["integer", "null"] }
+        isPersonalizable: { type: boolean }
+        giftMessageEnabled: { type: boolean }
+        attributes: { type: object }
+        isBestSeller: { type: boolean }
+        status: { type: string }
+        metaTitle: { type: string }
+        metaDescription: { type: string }
+        collectionId: { type: ["string", "null"] }
 
     ProductUpdate:
       type: object
@@ -664,32 +700,48 @@ components:
         nameEn: { type: string }
         descriptionAr: { type: string }
         descriptionEn: { type: string }
-        price: { type: number }
+        price: { type: ["string", "number"] }
+        compareAtPrice: { type: ["string", "number"] }
         imageUrl: { type: string }
+        images: { type: array, items: { type: string } }
+        stock: { type: integer }
         inStock: { type: boolean }
-        isFeatured: { type: boolean }
-        collectionId: { type: ["integer", "null"] }
+        isPersonalizable: { type: boolean }
+        giftMessageEnabled: { type: boolean }
+        attributes: { type: object }
+        isBestSeller: { type: boolean }
+        status: { type: string }
+        metaTitle: { type: string }
+        metaDescription: { type: string }
+        collectionId: { type: ["string", "null"] }
 
     Collection:
       type: object
-      required: [id, nameAr, nameEn, createdAt]
+      required: [id, name, slug, products, createdAt]
       properties:
-        id: { type: integer }
+        id: { type: string }
+        name: { type: string }
         nameAr: { type: string }
         nameEn: { type: string }
+        slug: { type: string }
+        productId: { type: ["string", "null"] }
         descriptionAr: { type: ["string", "null"] }
         descriptionEn: { type: ["string", "null"] }
         imageUrl: { type: ["string", "null"] }
         productCount: { type: integer }
+        products: { type: array, items: { $ref: "#/components/schemas/Product" } }
         createdAt: { type: string }
 
     CollectionWithProducts:
       type: object
-      required: [id, nameAr, nameEn, products, createdAt]
+      required: [id, name, slug, products, createdAt]
       properties:
-        id: { type: integer }
+        id: { type: string }
+        name: { type: string }
         nameAr: { type: string }
         nameEn: { type: string }
+        slug: { type: string }
+        productId: { type: ["string", "null"] }
         descriptionAr: { type: ["string", "null"] }
         descriptionEn: { type: ["string", "null"] }
         imageUrl: { type: ["string", "null"] }

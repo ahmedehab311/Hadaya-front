@@ -1,16 +1,16 @@
 import { Link } from "wouter";
 import { useLanguage } from "@/contexts/language-context";
-import { useListCollections } from "@workspace/api-client-react";
+import { useListMenu } from "@workspace/api-client-react";
 import { StoreLayout } from "@/components/store-layout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MOCK_COLLECTIONS } from "@/data/mock-data";
 
 export default function CollectionsPage() {
   const { t, lang } = useLanguage();
-  const { data: collectionsApi, isLoading, isError } = useListCollections();
+  const { data: menuResponse, isLoading, isError } = useListMenu();
 
-  // عرض API data طالما نجحت، عرض mock فقط عند الخطأ
-  const collections = isError ? MOCK_COLLECTIONS : (collectionsApi ?? []);
+  // الـ API response يحتوي على الـ data في property
+  const collections = isError ? MOCK_COLLECTIONS : (Array.isArray(menuResponse) ? menuResponse : (menuResponse as any)?.data ?? []);
 
   return (
     <StoreLayout>

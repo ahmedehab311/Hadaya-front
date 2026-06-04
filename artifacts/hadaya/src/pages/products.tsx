@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Search, Filter } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
-import { useListProducts, useListCollections } from "@workspace/api-client-react";
+import { useListMenu } from "@workspace/api-client-react";
 import { ProductCard } from "@/components/product-card";
 import { StoreLayout } from "@/components/store-layout";
 import { Input } from "@/components/ui/input";
@@ -15,15 +15,32 @@ export default function ProductsPage() {
   const [search, setSearch] = useState("");
   const [selectedCollection, setSelectedCollection] = useState<number | null>(null);
 
-  const { data: productsApi, isLoading, isError } = useListProducts({
-    collectionId: selectedCollection ?? undefined,
-    search: search || undefined,
-  });
-  const { data: collectionsApi, isError: isErrorCollections } = useListCollections();
+  const { data: menuResponse, isLoading, isError } = useListMenu();
 
+  // الـ API response يحتوي على الـ data في property
+  const menuData = Array.isArray(menuResponse) ? menuResponse : (menuResponse as any)?.data ?? [];
+  
   // عرض API data عند النجاح، عرض mock فقط عند الخطأ
-  const collections = isErrorCollections ? MOCK_COLLECTIONS : (collectionsApi ?? []);
-  const products = isError ? MOCK_PRODUCTS : (productsApi ?? []);
+  const collections = isError ? MOCK_COLLECTIONS : menuData;
+  
+  // استخراج الـ products من الـ menu بناءً على الـ selected collection والـ search
+  const products = useMemo(() => {
+    if (!menuData) return [];
+    
+    let allProducts = selectedCollection === null
+      ? menuData.flatMap((col: any) => col.products)
+      : menuData.find((col: any) => col.id === selectedCollection)?.products ?? [];
+    
+    // تطبيق الـ search filter
+    if (search) {
+      allProducts = allProducts.filter((p: any) => 
+        p.nameAr.toLowerCase().includes(search.toLowerCase()) || 
+        p.nameEn.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+    
+    return allProducts;
+  }, [menuData, selectedCollection, search]);
 
   return (
     <StoreLayout>

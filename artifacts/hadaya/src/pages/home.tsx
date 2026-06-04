@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { ArrowLeft, ArrowRight, Sparkles, Gift, Truck } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
-import { useGetFeaturedProducts, useListCollections } from "@workspace/api-client-react";
+import { useListMenu } from "@workspace/api-client-react";
 import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -105,12 +105,18 @@ export default function HomePage() {
   const { t, isRTL, lang } = useLanguage();
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
 
-  const { data: featuredApi, isLoading: loadingFeatured } = useGetFeaturedProducts();
-  const { data: collectionsApi, isLoading: loadingCollections } = useListCollections();
+  const { data: menuResponse, isLoading: loadingMenu, isError: errorMenu } = useListMenu();
 
-  // استخدم الـ API data لو موجودة، وإلا الـ mock data
-  const featured = featuredApi && featuredApi.length > 0 ? featuredApi : (!loadingFeatured ? MOCK_FEATURED : []);
-  const collections = collectionsApi && collectionsApi.length > 0 ? collectionsApi : (!loadingCollections ? MOCK_COLLECTIONS : []);
+  // الـ API response يحتوي على الـ data في property
+  const menuData = Array.isArray(menuResponse) ? menuResponse : (menuResponse as any)?.data ?? [];
+  
+  // استخراج الـ collections و الـ featured products من الـ menu
+  const collections = errorMenu ? MOCK_COLLECTIONS : menuData;
+  
+  // استخراج الـ featured products (الـ isBestSeller = true أو أول المنتجات من كل collection)
+  const featured = errorMenu ? MOCK_FEATURED : (menuData?.flatMap((col: any) => 
+    col.products.filter((p: any) => p.isBestSeller).slice(0, 2)
+  ).slice(0, 8) ?? []);
 
   return (
     <StoreLayout>
@@ -130,7 +136,7 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {loadingFeatured ? (
+        {loadingMenu ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {Array.from({ length: 4 }).map((_, i) => (
               <Skeleton key={i} className="aspect-square rounded-xl" />
@@ -138,7 +144,7 @@ export default function HomePage() {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {featured.slice(0, 8).map((product) => (
+            {featured.slice(0, 8).map((product: any) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
@@ -160,7 +166,7 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {loadingCollections ? (
+          {loadingMenu ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {Array.from({ length: 3 }).map((_, i) => (
                 <Skeleton key={i} className="h-48 rounded-xl" />
@@ -168,7 +174,7 @@ export default function HomePage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {collections.slice(0, 3).map((col) => (
+              {collections.slice(0, 3).map((col: any) => (
                 <Link key={col.id} href={`/collections/${col.id}`}>
                   <div
                     className="group relative bg-card border border-card-border rounded-2xl overflow-hidden h-48 cursor-pointer hover:shadow-lg transition-all"

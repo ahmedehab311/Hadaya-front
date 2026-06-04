@@ -513,7 +513,7 @@ export const getGetFeaturedProductsUrl = () => {
 
 
 
-  return `/api/products`
+  return `/api/products/featured`
 }
 
 /**
@@ -536,7 +536,7 @@ export const getFeaturedProducts = async ( options?: RequestInit): Promise<Produ
 
 export const getGetFeaturedProductsQueryKey = () => {
     return [
-    `/api/products`
+    `/api/products/featured`
     ] as const;
     }
 
@@ -804,6 +804,83 @@ export function useGetCollection<TData = Awaited<ReturnType<typeof getCollection
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetCollectionQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getListMenuUrl = () => {
+
+
+
+
+  return `/api/menu`
+}
+
+/**
+ * @summary Get menu with published collections and published products only
+ */
+export const listMenu = async ( options?: RequestInit): Promise<CollectionWithProducts[]> => {
+
+  return customFetch<CollectionWithProducts[]>(getListMenuUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListMenuQueryKey = () => {
+    return [
+    `/api/menu`
+    ] as const;
+    }
+
+
+export const getListMenuQueryOptions = <TData = Awaited<ReturnType<typeof listMenu>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMenu>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListMenuQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listMenu>>> = ({ signal }) => listMenu({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listMenu>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListMenuQueryResult = NonNullable<Awaited<ReturnType<typeof listMenu>>>
+export type ListMenuQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get menu with published collections and published products only
+ */
+
+export function useListMenu<TData = Awaited<ReturnType<typeof listMenu>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMenu>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListMenuQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -1118,7 +1195,7 @@ export const getGetAdminDashboardStatsUrl = () => {
 
 
 
-  return `/api/admin/dashboard/stats`
+  return `/api/dashboard/stats`
 }
 
 /**
@@ -1141,7 +1218,7 @@ export const getAdminDashboardStats = async ( options?: RequestInit): Promise<Da
 
 export const getGetAdminDashboardStatsQueryKey = () => {
     return [
-    `/api/admin/dashboard/stats`
+    `/api/dashboard/stats`
     ] as const;
     }
 
@@ -1195,7 +1272,7 @@ export const getGetOrderStatusBreakdownUrl = () => {
 
 
 
-  return `/api/admin/dashboard/order-status-breakdown`
+  return `/api/dashboard/order-status-breakdown`
 }
 
 /**
@@ -1218,7 +1295,7 @@ export const getOrderStatusBreakdown = async ( options?: RequestInit): Promise<O
 
 export const getGetOrderStatusBreakdownQueryKey = () => {
     return [
-    `/api/admin/dashboard/order-status-breakdown`
+    `/api/dashboard/order-status-breakdown`
     ] as const;
     }
 
@@ -1272,7 +1349,7 @@ export const getGetRecentActivityUrl = () => {
 
 
 
-  return `/api/admin/dashboard/recent-activity`
+  return `/api/dashboard/recent-activity`
 }
 
 /**
@@ -1295,7 +1372,7 @@ export const getRecentActivity = async ( options?: RequestInit): Promise<Activit
 
 export const getGetRecentActivityQueryKey = () => {
     return [
-    `/api/admin/dashboard/recent-activity`
+    `/api/dashboard/recent-activity`
     ] as const;
     }
 
@@ -1356,7 +1433,7 @@ export const getListAdminOrdersUrl = (params?: ListAdminOrdersParams,) => {
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/admin/orders?${stringifiedParams}` : `/api/admin/orders`
+  return stringifiedParams.length > 0 ? `/api/orders?${stringifiedParams}` : `/api/orders`
 }
 
 /**
@@ -1379,7 +1456,7 @@ export const listAdminOrders = async (params?: ListAdminOrdersParams, options?: 
 
 export const getListAdminOrdersQueryKey = (params?: ListAdminOrdersParams,) => {
     return [
-    `/api/admin/orders`, ...(params ? [params] : [])
+    `/api/orders`, ...(params ? [params] : [])
     ] as const;
     }
 
@@ -1433,7 +1510,7 @@ export const getGetAdminOrderUrl = (id: number,) => {
 
 
 
-  return `/api/admin/orders/${id}`
+  return `/api/orders/${id}`
 }
 
 /**
@@ -1456,7 +1533,7 @@ export const getAdminOrder = async (id: number, options?: RequestInit): Promise<
 
 export const getGetAdminOrderQueryKey = (id: number,) => {
     return [
-    `/api/admin/orders/${id}`
+    `/api/orders/${id}`
     ] as const;
     }
 
@@ -1510,7 +1587,7 @@ export const getUpdateAdminOrderUrl = (id: number,) => {
 
 
 
-  return `/api/admin/orders/${id}`
+  return `/api/orders/${id}`
 }
 
 /**
@@ -1582,7 +1659,7 @@ export const getListAdminProductsUrl = () => {
 
 
 
-  return `/api/admin/products`
+  return `/api/products`
 }
 
 /**
@@ -1605,7 +1682,7 @@ export const listAdminProducts = async ( options?: RequestInit): Promise<Product
 
 export const getListAdminProductsQueryKey = () => {
     return [
-    `/api/admin/products`
+    `/api/products`
     ] as const;
     }
 
@@ -1659,7 +1736,7 @@ export const getCreateProductUrl = () => {
 
 
 
-  return `/api/admin/products`
+  return `/api/products`
 }
 
 /**
@@ -1730,7 +1807,7 @@ export const getGetAdminProductUrl = (id: number,) => {
 
 
 
-  return `/api/admin/products/${id}`
+  return `/api/products/${id}`
 }
 
 /**
@@ -1753,7 +1830,7 @@ export const getAdminProduct = async (id: number, options?: RequestInit): Promis
 
 export const getGetAdminProductQueryKey = (id: number,) => {
     return [
-    `/api/admin/products/${id}`
+    `/api/products/${id}`
     ] as const;
     }
 
@@ -1807,7 +1884,7 @@ export const getUpdateProductUrl = (id: number,) => {
 
 
 
-  return `/api/admin/products/${id}`
+  return `/api/products/${id}`
 }
 
 /**
@@ -1879,7 +1956,7 @@ export const getDeleteProductUrl = (id: number,) => {
 
 
 
-  return `/api/admin/products/${id}`
+  return `/api/products/${id}`
 }
 
 /**
@@ -1949,7 +2026,7 @@ export const getListAdminCollectionsUrl = () => {
 
 
 
-  return `/api/admin/collections`
+  return `/api/collections`
 }
 
 /**
@@ -1972,7 +2049,7 @@ export const listAdminCollections = async ( options?: RequestInit): Promise<Coll
 
 export const getListAdminCollectionsQueryKey = () => {
     return [
-    `/api/admin/collections`
+    `/api/collections`
     ] as const;
     }
 
@@ -2026,7 +2103,7 @@ export const getCreateCollectionUrl = () => {
 
 
 
-  return `/api/admin/collections`
+  return `/api/collections`
 }
 
 /**
@@ -2097,7 +2174,7 @@ export const getUpdateCollectionUrl = (id: number,) => {
 
 
 
-  return `/api/admin/collections/${id}`
+  return `/api/collections/${id}`
 }
 
 /**
@@ -2169,7 +2246,7 @@ export const getDeleteCollectionUrl = (id: number,) => {
 
 
 
-  return `/api/admin/collections/${id}`
+  return `/api/collections/${id}`
 }
 
 /**
@@ -2239,7 +2316,7 @@ export const getGetSettingsUrl = () => {
 
 
 
-  return `/api/admin/settings`
+  return `/api/settings`
 }
 
 /**
@@ -2262,7 +2339,7 @@ export const getSettings = async ( options?: RequestInit): Promise<Settings> => 
 
 export const getGetSettingsQueryKey = () => {
     return [
-    `/api/admin/settings`
+    `/api/settings`
     ] as const;
     }
 
@@ -2316,7 +2393,7 @@ export const getUpdateSettingsUrl = () => {
 
 
 
-  return `/api/admin/settings`
+  return `/api/settings`
 }
 
 /**

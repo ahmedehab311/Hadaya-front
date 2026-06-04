@@ -92,7 +92,7 @@ export default function CartPage() {
                       {lang === "ar" ? item.nameAr : item.nameEn}
                     </h3>
                     <p className="text-primary font-bold mt-1" data-testid={`text-item-price-${item.productId}`}>
-                      {item.price.toFixed(2)} {t("ر.س", "SAR")}
+                      {Number(item.price).toFixed(2)} {t("ر.س", "SAR")}
                     </p>
                     <div className="flex items-center gap-3 mt-3">
                       <div className="flex items-center border border-border rounded-lg overflow-hidden">

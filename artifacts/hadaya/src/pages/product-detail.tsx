@@ -86,7 +86,7 @@ export default function ProductDetailPage() {
 
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-bold text-primary" data-testid="text-product-price">
-                  {product.price.toFixed(2)}
+                  {Number(product.price).toFixed(2)}
                 </span>
                 <span className="text-muted-foreground">{t("ر.س", "SAR")}</span>
               </div>

@@ -64,7 +64,7 @@ export function ProductCard({ product }: ProductCardProps) {
           <h3 className="font-semibold text-foreground leading-tight mb-2 line-clamp-2">{name}</h3>
           <div className="flex items-center justify-between gap-2">
             <span className="text-lg font-bold text-primary" data-testid={`text-price-${product.id}`}>
-              {product.price.toFixed(2)} {t("ر.س", "SAR")}
+              {Number(product.price).toFixed(2)} {t("ر.س", "SAR")}
             </span>
             <Button
               size="sm"

@@ -34,7 +34,7 @@ function productToForm(p: Product): ProductForm {
   return {
     nameAr: p.nameAr, nameEn: p.nameEn,
     descriptionAr: p.descriptionAr ?? "", descriptionEn: p.descriptionEn ?? "",
-    price: p.price.toString(), imageUrl: p.imageUrl,
+    price: Number(p.price).toString(), imageUrl: p.imageUrl,
     inStock: p.inStock, isFeatured: p.isFeatured,
     collectionId: p.collectionId?.toString() ?? "",
   };
@@ -49,8 +49,13 @@ export default function AdminProductsPage() {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [form, setForm] = useState<ProductForm>(EMPTY_FORM);
 
-  const { data: products, isLoading } = useListAdminProducts();
-  const { data: collections } = useListAdminCollections();
+  const { data: productsResponse, isLoading } = useListAdminProducts();
+  const { data: collectionsResponse } = useListAdminCollections();
+  
+  // Unwrap API responses that may be wrapped in { data: [...] }
+  const products = Array.isArray(productsResponse) ? productsResponse : (productsResponse as any)?.data ?? [];
+  const collections = Array.isArray(collectionsResponse) ? collectionsResponse : (collectionsResponse as any)?.data ?? [];
+  
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
   const deleteProduct = useDeleteProduct();
@@ -130,7 +135,7 @@ export default function AdminProductsPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-foreground truncate">{lang === "ar" ? product.nameAr : product.nameEn}</p>
-                  <p className="text-primary font-bold text-sm">{product.price.toFixed(2)} {t("ر.س", "SAR")}</p>
+                  <p className="text-primary font-bold text-sm">{Number(product.price).toFixed(2)} {t("ر.س", "SAR")}</p>
                   <div className="flex gap-1.5 mt-1 flex-wrap">
                     {product.isFeatured && <Badge variant="secondary" className="text-xs">{t("مميز", "Featured")}</Badge>}
                     {!product.inStock && <Badge variant="destructive" className="text-xs">{t("نفد", "Out")}</Badge>}

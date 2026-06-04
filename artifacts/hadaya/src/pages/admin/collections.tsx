@@ -28,7 +28,11 @@ export default function AdminCollectionsPage() {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [form, setForm] = useState<ColForm>(EMPTY_FORM);
 
-  const { data: collections, isLoading } = useListAdminCollections();
+  const { data: collectionsResponse, isLoading } = useListAdminCollections();
+  
+  // Unwrap API response that may be wrapped in { data: [...] }
+  const collections = Array.isArray(collectionsResponse) ? collectionsResponse : (collectionsResponse as any)?.data ?? [];
+  
   const createCollection = useCreateCollection();
   const updateCollection = useUpdateCollection();
   const deleteCollection = useDeleteCollection();
