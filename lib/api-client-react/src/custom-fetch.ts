@@ -385,5 +385,20 @@ export async function customFetch<T = unknown>(
     throw new ApiError(response, errorData, requestInfo);
   }
 
-  return (await parseSuccessBody(response, responseType, requestInfo)) as T;
+  const body = await parseSuccessBody(response, responseType, requestInfo);
+
+  // The backend wraps every response in { success, message, data }.
+  // The generated OpenAPI types expect only the inner `data` payload,
+  // so we unwrap it here to keep all typed hooks working correctly.
+  if (
+    body != null &&
+    typeof body === "object" &&
+    !Array.isArray(body) &&
+    "success" in (body as Record<string, unknown>) &&
+    "data" in (body as Record<string, unknown>)
+  ) {
+    return (body as Record<string, unknown>).data as T;
+  }
+
+  return body as T;
 }

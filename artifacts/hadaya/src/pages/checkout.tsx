@@ -676,7 +676,7 @@ export default function CheckoutPage() {
                   <span className="text-muted-foreground truncate">
                     {lang === "ar" ? item.nameAr : item.nameEn} × {item.quantity}
                   </span>
-                  <span className="shrink-0">{(item.price * item.quantity).toFixed(2)}</span>
+                  <span className="shrink-0">{(Number(item.price) * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
             </div>
@@ -684,16 +684,16 @@ export default function CheckoutPage() {
             <div className="space-y-1.5 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">{t("المجموع الفرعي", "Subtotal")}</span>
-                <span>{subtotal.toFixed(2)}</span>
+                <span>{(subtotal || 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">{t("التوصيل", "Delivery")}</span>
-                <span>{deliveryFee.toFixed(2)}</span>
+                <span>{(Number(deliveryFee) || 0).toFixed(2)}</span>
               </div>
               <Separator />
               <div className="flex justify-between font-bold">
                 <span>{t("الإجمالي", "Total")}</span>
-                <span className="text-primary">{total.toFixed(2)} {t("ر.س", "SAR")}</span>
+                <span className="text-primary">{(total || 0).toFixed(2)} {t("ر.س", "SAR")}</span>
               </div>
             </div>
           </div>

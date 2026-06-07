@@ -92,7 +92,7 @@ export default function CartPage() {
                       {lang === "ar" ? item.nameAr : item.nameEn}
                     </h3>
                     <p className="text-primary font-bold mt-1" data-testid={`text-item-price-${item.productId}`}>
-                      {Number(item.price).toFixed(2)} {t("ر.س", "SAR")}
+                      {(Number(item.price) || 0).toFixed(2)} {t("ر.س", "SAR")}
                     </p>
                     <div className="flex items-center gap-3 mt-3">
                       <div className="flex items-center border border-border rounded-lg overflow-hidden">
@@ -125,7 +125,7 @@ export default function CartPage() {
                   </div>
                   <div className="text-end">
                     <span className="font-bold text-foreground" data-testid={`text-item-subtotal-${item.productId}`}>
-                      {(item.price * item.quantity).toFixed(2)} {t("ر.س", "SAR")}
+                      {(Number(item.price) * item.quantity || 0).toFixed(2)} {t("ر.س", "SAR")}
                     </span>
                   </div>
                 </div>
@@ -138,16 +138,16 @@ export default function CartPage() {
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">{t("المجموع الفرعي", "Subtotal")}</span>
-                    <span data-testid="text-subtotal">{subtotal.toFixed(2)} {t("ر.س", "SAR")}</span>
+                    <span data-testid="text-subtotal">{(subtotal || 0).toFixed(2)} {t("ر.س", "SAR")}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">{t("رسوم التوصيل", "Delivery Fee")}</span>
-                    <span>{deliveryFee.toFixed(2)} {t("ر.س", "SAR")}</span>
+                    <span>{(Number(deliveryFee) || 0).toFixed(2)} {t("ر.س", "SAR")}</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between font-bold text-base">
                     <span>{t("الإجمالي", "Total")}</span>
-                    <span className="text-primary" data-testid="text-total">{total.toFixed(2)} {t("ر.س", "SAR")}</span>
+                    <span className="text-primary" data-testid="text-total">{(total || 0).toFixed(2)} {t("ر.س", "SAR")}</span>
                   </div>
                 </div>
                 <Link href="/checkout">
